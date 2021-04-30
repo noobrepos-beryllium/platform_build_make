@@ -821,6 +821,29 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   # Dump fingerprints
   script.Print("Target: {}".format(target_info.fingerprint))
+  
+  android_version = target_info.GetBuildProp("ro.build.version.release")
+  build_id = target_info.GetBuildProp("ro.build.id")
+  build_date = target_info.GetBuildProp("ro.build.date")
+  security_patch = target_info.GetBuildProp("ro.build.version.security_patch")
+  device = target_info.GetBuildProp("ro.octavi.device")
+  octavi_maintainer = target_info.GetBuildProp("ro.maintainer.name")
+  
+  script.Print("--------------------------------------------------");
+  script.Print("   ____  _______________ _    ______   ____  _____");
+  script.Print("  / __ \/ ____/_  __/   | |  / /  _/  / __ \/ ___/");
+  script.Print(" / / / / /     / / / /| | | / // /   / / / /\__ \ ");
+  script.Print("/ /_/ / /___  / / / ___ | |/ // /   / /_/ /___/ / ");
+  script.Print("\____/\____/ /_/ /_/  |_|___/___/   \____//____/  ");
+  script.Print("                                                  ");
+  script.Print("--------------------------------------------------");
+  script.Print(" Android version: %s"%(android_version));
+  script.Print(" Build id: %s"%(build_id));
+  script.Print(" Build date: %s"%(build_date));
+  script.Print(" Security patch: %s"%(security_patch));
+  script.Print(" Device: %s"%(device));
+  script.Print(" Maintainer: %s"%(octavi_maintainer));
+  script.Print("--------------------------------------------------");
 
   device_specific.FullOTA_InstallBegin()
 
@@ -869,12 +892,12 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
 
   device_specific.FullOTA_PostValidate()
+  
+  script.WriteRawImage("/boot", "boot.img")
 
   if OPTIONS.backuptool:
     script.ShowProgress(0.02, 10)
     script.RunBackup("restore", sysmount, target_info.get('use_dynamic_partitions') == "true")
-
-  script.WriteRawImage("/boot", "boot.img")
 
   script.ShowProgress(0.1, 10)
   device_specific.FullOTA_InstallEnd()
